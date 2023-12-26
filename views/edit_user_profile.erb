@@ -1,0 +1,25 @@
+<head>
+    <link rel="stylesheet" href="/Style/reset.css"> 
+    <link rel="stylesheet" href="/Style/header.css"> 
+    <link rel="stylesheet" href="/Style/edit_user_profiles.css"> 
+</head>
+<%= erb :"common/header"%>
+
+<section class="edit-user-details">
+    <div class ="edit-container">
+    <form method="post" action="/edit-user-profile/<%= @user.user_id %>">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" value="<%= @user.username %>">
+            <label for="password">Password:</label>
+    <input type="password" id="password" name="password" value="<%= @user.password %>">
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" value="<%= @user.email %>">
+
+    <label for="permission_level">Permission Level:</label>
+    <input type="number" id="permission_level" name="permission_level" value="<%= @user.permission_level %>">
+
+    <input type="submit" value="Save">
+</form>
+</div>
+</section>

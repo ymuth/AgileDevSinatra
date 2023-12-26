@@ -1,0 +1,82 @@
+<head>
+    <link rel="stylesheet" href="/Style/reset.css"> 
+    <link rel="stylesheet" href="/Style/header.css">
+    <link rel="stylesheet" href="/Style/course_details.css"> 
+</head>
+
+<%= erb :"common/header"%>
+
+<section class="course-details">
+<div class="container">
+  <h2><%= @course[:title] %></h2>
+  <p><%= @course[:description] %></p>
+  <p>Subject: <%= @course[:subject] %></p>
+  <p>Provider: <%= @course[:provider] %></p>
+  <p>Difficulty: <%= @course[:difficulty] %></p>
+  <p>Link: <a href="<%= @course[:link] %>"><%= @course[:link] %></a></p>
+  <p>Rating: <%= @course[:rating] %></p>
+  
+
+  <form method="post" action="/enroll-course">
+    <input type="hidden" name="course_id" value="<%= @course[:course_id] %>">
+    <input type="submit" value="Track Progress">
+  </form>
+
+  <form method="post" action="/update-done">
+    <input type="hidden" name="course_id" value="<%= @course[:course_id] %>">
+    <input type="submit" value="Already done">
+  </form>
+  
+  <div class="rate-course">
+  <form method="post" action="/rate-course">
+    <input type="hidden" id="progress-course-id" name="course_id" />
+    <input type="hidden" name="course_id" value="<%= @course[:course_id] %>">
+    <label >1</label><br>
+    <input type="radio"  name="score" value= 1>
+    <label >2</label><br>
+    <input type="radio"  name="score" value= 2>
+    <label >3</label><br>
+    <input type="radio"  name="score" value= 3>
+    <label >4</label><br>
+    <input type="radio"  name="score" value= 4>
+    <label >5</label>
+    <input type="radio"  name="score" value= 5>
+    <input type="submit" value="Rate course">
+  </form>
+  </div>
+
+  <form id="bookmark-form">
+    <input type="hidden" name="course_id" value="<%= @course[:course_id] %>">
+    <button type="submit">Bookmark course</button>
+  </form>
+
+  <img src="<%= @course[:image] %>" alt="<%= @course[:title] %>">
+</div>
+</section>
+
+<script>
+  document.querySelector("#bookmark-form").addEventListener("submit", function(event) {
+    event.preventDefault(); // prevent the page from reloading
+
+    fetch(`/bookmarked-courses/${event.target.course_id.value}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        course_id: event.target.course_id.value
+      })
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Failed to bookmark course.");
+        }
+        alert("Course bookmarked successfully!");
+      })
+      .catch(error => {
+        console.error(error);
+        alert("Failed to bookmark course.");
+      });
+  });
+</script>
+

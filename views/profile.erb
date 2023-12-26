@@ -1,0 +1,616 @@
+<%= erb :"common/header"%>
+<head>
+    <link rel="stylesheet" href="/Style/reset.css">
+    <link rel="stylesheet" href="/Style/header.css">
+    <% if @user.permission_level == 0 %>
+      <link rel="stylesheet" href="/Style/user_profile.css">
+    <% else %>
+      <link rel="stylesheet" href="/Style/staff_profile.css">
+    <% end %>
+</head>
+
+<body>
+  <% if @user.permission_level == 0 %>
+   <h1>Profile Page</h1>
+  <div class="container">
+    <p>Welcome to your profile page <%= @user.username %>!</p>
+    <p> Your permission level is learner </p>
+    
+
+    <form method="post" action="update-personal">
+      <p> First Name </p><input type="text" name="first_name" placeholder="<%= @user.profile.first_name %>">
+      <p> Last Name </p><input type="text" name="last_name" placeholder="<%= @user.profile.last_name %>">
+
+      <% if !@error_type.nil? && @error_type == "personal" %>
+        <p style="color: red"> <%= @error %> </p>
+      <% end %>
+      <p><input type="submit" value="Update Personal Information"></p>
+    </form>
+
+    <br>
+
+  
+    <form method="post" action="update-academic">
+      <p> Course Level </p>
+      <select name="course_level" >
+        <option value="1">GCSE</option>
+        <option value="2">A Level</option>
+        <option value="3">Undergraduate</option>
+        <option value="4">Post Graduate</option>
+      </select>
+      <p> Year of Study </p><input type="number" name="year" placeholder="<%= @user.profile.year %>">
+
+      <% if !@error_type.nil? && @error_type == "academic" %>
+        <p style="color: red"> <%= @error %> </p>
+      <% end %>
+      <p><input type="submit" value="Update Academic Information"></p>
+    </form>
+
+    <br>
+
+    <form method="post" action="update-password">
+      <p> Current Password </p> <input type="password" name="currrent_password">
+      <p> Confirm Current Password </p> <input type="password" name="current_password_confirm">
+
+      <p> New Password </p> <input type="password" name="new_password">
+
+      <% if !@error_type.nil? && @error_type == "password" %>
+        <p style="color: red"> <%= @error %> </p>
+      <% end %>
+
+      <p><input type="submit" value="Update Password"></p>
+    </form>
+
+    <br>
+
+    <h2> Interests </h2>
+
+    <div class="interests-container">
+      <% @interests.each do |interest| %>
+        <div class="interest">
+          <p onclick="deleteInterest('<%= interest %>')"> &#x2716; </p>
+          <p> <%= interest %> </p>
+        </div>
+      <% end %>
+    </div>
+
+    <form method="post" action="add-interest">
+      <input type="text" name="interest">
+      <p><input type="submit" value="Add Interest"></p>
+    </form>   
+
+    <h2> My Courses </h2>
+
+    <table>
+      <tr>
+        <th> Course </th>
+        <th> Progress </th>
+        <th> Update Progress </th>
+        <th> Rate </th>
+      </tr>
+
+      <% @my_courses.each do |course| %>
+        <tr>
+          <td> <%= course.longTitle %> </td>
+          <td> <%= course[:progress] %> % </td>
+          <td> <button onclick="openProgressModal(<%= course.course_id %>)"> Update my progress </button> </td>
+          <td> <button <% unless course[:progress] == 100 %> disabled <% end %>> Review </button> </td>
+        </tr>
+      <% end %>
+    </table>
+
+    <a href="/course-history">Update History</a>
+
+    <div id="progress-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeProgressModal()">&times;</span>
+        <form method="post" action="update-progress">
+            <input type="hidden" id="progress-course-id" name="course_id" />
+            <p> Update Progress </p>
+            <br>
+            <input type="number" name="progress">
+
+            <p><input type="submit" value="Update"></p>
+        </form>
+      </div>
+    </div>
+
+  <div class="submitting-course-container">
+  <h2> Suggest a Course </h2>
+
+  <div class="submit-course-form">
+  <form method="post" action="submit-course">
+    <p> Title </p><input type="text" name="title">
+    <p> Description </p><input type="text" name="description">
+    <p> Subject </p><input type="text" name="subject">
+    <p> Provider </p><input type="text" name="provider">
+    <p> Difficulty </p><input type="number" name="difficulty">
+    <p> Link for course </p><input type="text" name="link">
+    <p> Image for course </p><input type="text" name="image">
+
+    <% if !@error_type.nil? && @error_type == "course" %>
+      <p style="color: red"> <%= @error %> </p>
+    <% end %>
+
+    <p><input type="submit" value="Submit Course"></p>
+  </form>
+  </div>
+  </div>
+
+    <form method="post" action="delete-tokens">
+      <p><input type="submit" value="Log Me Out Everywhere"></p>
+    </form>
+  </div> 
+
+  <% elsif @user.permission_level == 1 %>
+    <h1>Profile Page</h1>
+    <div class="container">
+    <p>Welcome to your profile page <%= @user.username %>!</p>
+    
+    <p> Your permission level is Admin </p>
+    
+  <h2> Suspended Accounts </h2>
+
+  <table id="suspended-table">
+    <tr>
+      <th> Name </th>
+      <th> Username </th>
+      <th> Email </th>
+      <th> Expiry </th>
+      <th> Revoke Suspension </th>
+    </tr>
+
+    <% @suspended_users.each do |x| %>
+      <tr>
+        <td> <%= x[:first_name] + " " + x[:last_name] %> </td>
+        <td> <%= x[:username] %> </td>
+        <td> <%= x[:email] %> </td>
+        <td> <%= Time.at(x[:expiry]).strftime("%d/%m/%Y") %> </td>
+        <td> <button onclick="revokeUserSuspension(<%= x[:user_id] %>)"> Revoke </button> </td>
+      </tr>
+    <% end %>
+
+  </table>
+
+  <table id="users-table">
+    <tr>
+      <th> Name </th>
+      <th> Username </th>
+      <th> Email </th>
+      <th> Academic Level </th>
+      <th> Suspend </th>
+      <th> Edit User Profiles </th>
+    </tr>
+    
+    <% @users.each do |x| %>
+      <tr>
+        <td> <%= x.profile.name %> </td>
+        <td> <%= x.username %> </td>
+        <td> <%= x.email %> </td>
+        <td> <%= x.profile.level %> </td>
+        <td> <button id="suspend" onclick="openSuspendModel('<%= x.user_id %>')"> Suspend </button> </td>
+        <td> <form method="post" action="/edit-user-profile">
+              <input type="hidden" name="user_id" value="<%= x.user_id %>">
+              <input type="submit" value="Edit">
+              </form> </td>
+      </tr>
+    <% end %>
+  </table>
+
+  <div id="suspend-modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeSuspendModal()">&times;</span>
+      <form method="post" action="suspend-user">
+          <input type="hidden" id="suspend-user-id" name="user_id" />
+          <p> Suspend User </p>
+          <br>
+          <select name="time"> 
+            <%# Values are time in seconds %>
+            <option value="86400"> 1 Day </option>
+            <option value="1123200"> 3 Days </option>
+            <option value="604800"> 1 Week </option>
+            <option value="2629800"> 1 Month </option>
+            <option value="-1"> Permanent </option>
+          </select>
+
+          <p><input type="submit" value="Suspend"></p>
+      </form>
+    </div>
+  </div>
+  <br>
+
+    <form method="post" action="delete-tokens">
+      <p><input type="submit" value="Log Me Out Everywhere"></p>
+    </form>
+  </div>
+  <% elsif @user.permission_level == 2 %>
+    <h1>Profile Page</h1>
+    <div class="container">
+    <p>Welcome to your profile page <%= @user.username %>!</p>
+    
+    <p> Your permission level is Moderator </p>
+
+    <h2>Unapproved Courses</h2>
+
+    <div class="course-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Subject</th>
+          <th>Provider</th>
+          <th>Difficulty</th>
+          <th>Link</th>
+          <th>Image</th>
+          <th>Approve</th>
+          <th>Reject</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @unapproved_courses.each do |course| %>
+          <tr>
+            <td><%= course[:title] %></td>
+            <td><%= course[:description] %></td>
+            <td><%= course[:subject] %></td>
+            <td><%= course[:provider] %></td>
+            <td><%= course[:difficulty] %></td>
+            <td><%= course[:link] %></td>
+            <td><%= course[:image] %></td>
+            <td>
+              <form method="post" action="/approve-course">
+                <input type="hidden" name="course_id" value="<%= course[:course_id] %>">
+                <input type="submit" value="Approve">
+              </form>
+            </td>
+            <td>
+              <form method="post" action="/reject-course">
+                <input type="hidden" name="course_id" value="<%= course[:course_id] %>">
+                <input type="submit" value="Reject">
+              </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+
+    <h2>Approved Courses</h2>
+    <div class="course-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Subject</th>
+          <th>Provider</th>
+          <th>Difficulty</th>
+          <th>Link</th>
+          <th>Image</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @courses.each do |course| %>
+          <tr>
+            <td><%= course[:title] %></td>
+            <td><%= course[:description] %></td>
+            <td><%= course[:subject] %></td>
+            <td><%= course[:provider] %></td>
+            <td><%= course[:difficulty] %></td>
+            <td><%= course[:link] %></td>
+            <td><%= course[:image] %></td>
+             <td>
+            <form method="post" action="/edit-course-details">
+              <input type="hidden" name="course_id" value="<%= course[:course_id] %>">
+              <input type="submit" value="Edit">
+            </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+
+    <h2> Adding Courses </h2>
+
+  <div class="submit-course-form">
+  <form method="post" action="submit-course-moderator">
+    <p> Title </p><input type="text" name="title">
+    <p> Description </p><input type="text" name="description">
+    <p> Subject </p><input type="text" name="subject">
+    <p> Provider </p><input type="text" name="provider">
+    <p> Difficulty </p><input type="number" name="difficulty">
+    <p> Link for course </p><input type="text" name="link">
+    <p> Image for course </p><input type="text" name="image">
+
+    <% if !@error_type.nil? && @error_type == "course" %>
+      <p style="color: red"> <%= @error %> </p>
+    <% end %>
+
+    <p><input type="submit" value="Submit Course"></p>
+  </form>
+  </div>
+
+    <br>
+
+    <form method="post" action="delete-tokens">
+      <p><input type="submit" value="Log Me Out Everywhere"></p>
+    </form>
+  </div>
+  <% elsif @user.permission_level == 3 %>
+    <h1>Profile Page</h1>
+    <div class="container">
+    <p>Welcome to your dashboard page <%= @user.username %>!</p>
+    <p> Your permission level is manager </p>
+
+    <h2> Suspended Accounts </h2>
+
+    <table id="suspended-table">
+      <tr>
+        <th> Name </th>
+        <th> Username </th>
+        <th> Email </th>
+        <th> Expiry </th>
+        <th> Revoke Suspension </th>
+      </tr>
+
+      <% @suspended_users.each do |x| %>
+        <tr>
+          <td> <%= x[:first_name] + " " + x[:last_name] %> </td>
+          <td> <%= x[:username] %> </td>
+          <td> <%= x[:email] %> </td>
+          <td> <%= Time.at(x[:expiry]).strftime("%d/%m/%Y") %> </td>
+          <td> <button onclick="revokeUserSuspension(<%= x[:user_id] %>)"> Revoke </button> </td>
+        </tr>
+      <% end %>
+
+    </table>
+    
+    <h2> Users </h2>
+
+    <table id="users-table">
+      <tr>
+        <th> Name </th>
+        <th> Username </th>
+        <th> Email </th>
+        <th> Academic Level </th>
+        <th> Years Of Study </th>
+        <th> Interests </th>
+        <th> Suspend </th>
+      </tr>
+      
+      <% @users.each do |x| %>
+        <tr>
+          <td> <%= x.profile.name %> </td>
+          <td> <%= x.username %> </td>
+          <td> <%= x.email %> </td>
+          <td> <%= x.profile.level %> </td>
+          <td> <%= x.profile.year %> </td>
+          <td> <%= x.profile.interests %> </td>
+          <td> <button id="suspend" onclick="openSuspendModel('<%= x.user_id %>')"> Suspend </button> </td>
+        </tr>
+      <% end %>
+    </table>
+
+    <h2> Courses </h2>
+
+    <table class="courses-table">
+      <tr>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Subject</th>
+        <th>Provider</th>
+        <th>Difficulty</th>
+        <th>Link</th>
+        <th>Image</th>
+        <th>Rating</th>
+        <th>Edit</th>
+      </tr>
+      <% @courses.each do |course| %>
+        <tr>
+          <td><%= course[:title] %></td>
+          <td><%= course[:description] %></td>
+          <td><%= course[:subject] %></td>
+          <td><%= course[:provider] %></td>
+          <td><%= course[:difficulty] %></td>
+          <td><%= course[:link] %></td>
+          <td><%= course[:image] %></td>
+          <td><%= course[:rating] %></td>
+            <td>
+          <form method="post" action="/edit-course-details">
+            <input type="hidden" name="course_id" value="<%= course[:course_id] %>">
+            <input type="submit" value="Edit">
+          </form>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+    
+    <h2>Suggested Courses</h2>
+
+    <div class="course-table">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Subject</th>
+          <th>Provider</th>
+          <th>Difficulty</th>
+          <th>Link</th>
+          <th>Image</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @unapproved_courses.each do |course| %>
+          <tr>
+            <td><%= course[:title] %></td>
+            <td><%= course[:description] %></td>
+            <td><%= course[:subject] %></td>
+            <td><%= course[:provider] %></td>
+            <td><%= course[:difficulty] %></td>
+            <td><%= course[:link] %></td>
+            <td><%= course[:image] %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+
+    <div id="suspend-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeSuspendModal()">&times;</span>
+        <form method="post" action="suspend-user">
+            <input type="hidden" id="suspend-user-id" name="user_id" />
+            <p> Suspend User </p>
+            <br>
+            <select name="time"> 
+              <%# Values are time in seconds %>
+              <option value="86400"> 1 Day </option>
+              <option value="1123200"> 3 Days </option>
+              <option value="604800"> 1 Week </option>
+              <option value="2629800"> 1 Month </option>
+              <option value="-1"> Permanent </option>
+            </select>
+
+            <p><input type="submit" value="Suspend"></p>
+        </form>
+      </div>
+    </div>
+    <br>
+
+    <form method="post" action="delete-tokens">
+      <p><input type="submit" value="Log Me Out Everywhere"></p>
+    </form>
+  </div>
+
+    <% elsif @user.permission_level == 4 %>
+    <h1>Profile Page</h1>
+    <div class="container">
+      <p>Welcome to your profile page <%= @user.username %>!</p>
+      <p> Your permission level is owner </p>
+
+      <h2> Users </h2>
+
+    <table id="users-table">
+      <tr>
+        <th> Name </th>
+        <th> Username </th>
+        <th> Email </th>
+        <th> Academic Level </th>
+        <th> Years Of Study </th>
+        <th> Interests </th>
+      </tr>
+      
+      <% @users.each do |x| %>
+        <tr>
+          <td> <%= x.profile.name %> </td>
+          <td> <%= x.username %> </td>
+          <td> <%= x.email %> </td>
+          <td> <%= x.profile.level %> </td>
+          <td> <%= x.profile.year %> </td>
+          <td> <%= x.profile.interests %> </td>
+        </tr>
+      <% end %>
+    </table>
+
+      <form method="post" action="delete-tokens">
+        <p><input type="submit" value="Log Me Out Everywhere"></p>
+      </form>
+    </div>
+
+  <% elsif @user.permission_level == 5 %>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Subject</th>
+          <th>Provider</th>
+          <th>Difficulty</th>
+          <th>Link</th>
+          <th>Image</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @courses.each do |course| %>
+          <tr>
+            <td><%= course[:title] %></td>
+            <td><%= course[:description] %></td>
+            <td><%= course[:subject] %></td>
+            <td><%= course[:provider] %></td>
+            <td><%= course[:difficulty] %></td>
+            <td><%= course[:link] %></td>
+            <td><%= course[:image] %></td>
+             <td>
+            <form method="post" action="/edit-course-details">
+              <input type="hidden" name="course_id" value="<%= course[:course_id] %>">
+              <input type="submit" value="Edit">
+            </form>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <br>
+
+    <form method="post" action="submit-course-provider">
+      <p> Title </p><input type="text" name="title">
+      <p> Description </p><input type="text" name="description">
+      <p> Subject </p><input type="text" name="subject">
+      <p> Provider </p><input type="text" name="provider">
+      <p> Difficulty </p><input type="number" name="difficulty">
+      <p> Link for course </p><input type="text" name="link">
+      <p> Image for course </p><input type="text" name="image">
+
+      <% if !@error_type.nil? && @error_type == "course" %>
+        <p style="color: red"> <%= @error %> </p>
+      <% end %>
+
+      <p><input type="submit" value="Submit Course"></p>
+    </form>
+  <% end %>
+
+  <script>
+    const deleteInterest = (interest) => {
+      fetch("/delete-interest", {
+        method: "POST",
+        body: interest
+      })
+    }
+
+    const revokeUserSuspension = (id) => {
+      fetch("/revoke-suspension", {
+        method: "POST",
+        body: id
+      })
+    }
+
+    const openSuspendModel = (id) => {
+      let modal = document.getElementById("suspend-modal")
+      let user_id = document.getElementById("suspend-user-id")
+      user_id.value = id
+      modal.style.display = "block"
+    }
+
+    const closeSuspendModal = () => {
+      let modal = document.getElementById("suspend-modal")
+      modal.style.display = "none"
+    }
+
+    const openProgressModal = (id) => {
+      let modal = document.getElementById("progress-modal")
+      let course_id = document.getElementById("progress-course-id")
+      course_id.value = id
+      modal.style.display = "block"
+    }
+
+    const closeProgressModal = () => {
+      let modal = document.getElementById("progress-modal")
+      modal.style.display = "none"
+    }
+  </script>
+</body>

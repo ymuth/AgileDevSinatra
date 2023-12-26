@@ -1,0 +1,30 @@
+<head>
+  <link rel="stylesheet" href="Style/login.css">
+  <script>
+    function togglePasswordVisibility() {
+      var passwordField = document.getElementById("password");
+      var showPasswordField = document.getElementById("show_password");
+      if (showPasswordField.checked) {
+        passwordField.type = "text";
+      } else {
+        passwordField.type = "password";
+      }
+    }
+  </script>
+</head>
+
+<div class="container">
+  <form method="post" action="/login">
+    <p>Username: </p> <input type="text" name="username"/>
+    <p>Password: </p> <input type="password" name="password" id="password">
+    <input type="checkbox" id="show_password" onclick="togglePasswordVisibility()"> Show password
+
+    <p><input type="submit" value="Login"></p>
+
+    <% unless @error.nil? %>
+    <p class="error"><%= @error%> </p>
+    <% end %>
+
+    <p>Forgot Password? <a href="/forgotten_password">Click Here</a></p>
+  </form>
+</div>

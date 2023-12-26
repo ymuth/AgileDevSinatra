@@ -1,0 +1,24 @@
+<head>
+    <link rel="stylesheet" href="Style/index.css">
+</head>
+
+<%= erb :"common/header"%>
+
+<div class="container">
+  <h2 id="page-title"> Search Results </h2>
+  <div class="course-container">
+    <% @results.each do |course| %>
+        <a href="/course_details/<%= course[:course_id] %>" data-course-id="<%= course[:course_id] %>">
+            <div class="course-card">
+                <img src="<%= course[:image] %>" alt="<%= course[:title] %>">
+                <div class="card-info">
+                    <h2 class="course-title"><%= course[:title] %></h2>
+                    <p class="course-level"><%=course[:difficulty] %></p>
+                    <p class="course-category"><%=course[:subject] %></p>
+                    <p class="course-subtext"><%= course[:description] %></p>    
+                </div>
+            </div>
+        </a>
+    <% end %>
+  </div>
+</div>

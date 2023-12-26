@@ -1,0 +1,31 @@
+<head>
+  <link rel="stylesheet" href="Style/index.css">
+  <link rel="stylesheet" href="Style/header.css">
+  <link rel="stylesheet" href="Style/reset.css">
+</head>
+
+<%= erb :"common/header"%>
+
+<div class="container">
+  <h2 id="page-title">Bookmarked Courses:</h2>
+    <% if @courses.any? %>
+    <div class="course-container">
+      <% @courses.each do |course| %>
+        <a href="/course_details/<%= course[:course_id] %>" data-course-id="<%= course[:course_id] %>">
+          <div class="course-card">
+            <img src="<%= course.image %>" alt="<%= course.longTitle %>">
+            <div class="card-info">
+              <h2 class="course-title"><%= course.title %></h2>
+              <p class="course-level"><%= course.level %></p>
+              <p class="course-category"><%= course.subject %></p>
+              <p class="course-subtext"><%= course.description %></p>    
+            </div>
+          </div>
+        </a>
+      <% end %>
+    </div>
+  <% else %>
+    <p>No bookmarked courses found.</p>
+  <% end %>
+
+</div>

@@ -1,0 +1,36 @@
+<head>
+    <link rel="stylesheet" href="/Style/reset.css"> 
+    <link rel="stylesheet" href="/Style/header.css">
+    <link rel="stylesheet" href="/Style/course_history.css"> 
+    <%# Font Awesome icons https://fontawesome.com/ %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<%= erb :"common/header"%>
+
+<div class="container">
+    <form id="search" action="/course-history">
+        <input type="text" name="search">
+        <button type="submit"><i class="fa fa-search"></i></button>
+    </form>
+
+    <form id="history-form" method="post" action="/add-course-history">
+        <table>
+            <tr>
+                <th>Course</th>
+                <th>Provider</th>
+                <th>Select</th>
+            </tr>
+
+            <% @courses.each do |course| %>
+                <tr>
+                    <td> <%= course.title %> </td>
+                    <td> <%= course.provider %> </td>
+                    <td> <input type="checkbox" name="course_<%= course.course_id %>"> </td>
+                </tr>
+            <% end %>
+        </table>
+
+        <input type="submit" value="Update">
+    </form>
+</div>

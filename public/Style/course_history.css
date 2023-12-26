@@ -1,0 +1,49 @@
+.container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    justify-content: center;
+    padding: 2em;
+}
+
+#history-form {
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    margin-right: 0; 
+}
+
+#search {
+    padding-right: 2em;
+}
+
+table {
+    border-collapse: collapse;  
+    width: 70%;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+    text-align: left;
+    padding: 8px !important; 
+}
+
+th {
+    background-color: #dddddd;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+input[type=submit] {
+    width: 70%;  
+    padding: 0.35rem;   
+    border: none;
+    border-radius: 5px;
+    color: white;
+    background-color: #be1818;
+} 

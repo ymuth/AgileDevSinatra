@@ -1,0 +1,15 @@
+.edit-container form {
+  display: flex;
+  flex-direction: column;
+  padding: 20px
+}
+
+.edit-container form label {
+  margin-bottom: 10px;
+}
+
+.edit-container form input, .edit-container form textarea {
+  padding: 10px;
+  margin-bottom: 20px;
+  box-sizing: border-box;
+}

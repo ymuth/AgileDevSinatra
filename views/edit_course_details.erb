@@ -1,0 +1,43 @@
+<head>
+    <link rel="stylesheet" href="/Style/reset.css"> 
+    <link rel="stylesheet" href="/Style/header.css">
+    <link rel="stylesheet" href="/Style/course_details.css"> 
+</head>
+
+<%= erb :"common/header"%>
+
+<section class="edit-course-details">
+    <div class ="edit-container">
+    <form method="post" action="/edit-course-details/<%= @course.course_id %>">
+        <label for="title">Title:</label>
+        <input type="text" id="title" name="title" value="<%= @course.title %>">
+
+        <label for="description">Description:</label>
+        <textarea id="description" name="description"><%= @course.description %></textarea>
+
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" name="subject" value="<%= @course.subject %>">
+
+        <label for="provider">Provider:</label>
+        <input type="text" id="provider" name="provider" value="<%= @course.provider %>">
+
+        <label for="difficulty">Difficulty:</label>
+        <input type="text" id="difficulty" name="difficulty" value="<%= @course.difficulty %>">
+
+        <label for="link">Link:</label>
+        <input type="text" id="link" name="link" value="<%= @course.link %>">
+
+        <label for="image">Image:</label>
+        <input type="text" id="image" name="image" value="<%= @course.image %>">
+
+        <input type="submit" value="Save">
+    </form>
+
+    <br>
+
+    <form method="post" action="archive-course">
+        <input type="hidden" name="course_id" value=<%= @course.course_id %>>
+        <input type="submit" value="<%= @course[:archived] == 0 ? "Show" : "Hide" %>">
+    </form>
+    </div>
+</section>

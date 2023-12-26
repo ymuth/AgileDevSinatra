@@ -1,0 +1,31 @@
+<head>
+    <title><%= @title.nil? ? "Eduflix" : @title %></title>
+    <link rel="stylesheet" href="Style/reset.css">
+    <link rel="stylesheet" href="Style/header.css">
+</head>
+
+<header>
+    <h1> <a href="/">Eduflix</a> </h1>
+    <div class="search">
+    <form method="get" action="/search">
+        <input type="text" name="query" placeholder="Search...">
+        <button type="submit">Search</button>
+    </form>
+    </div>
+
+    <div class="button-group">
+        <% if session[:logged_in] %>
+            <div class="profile-icon" onclick="location.href='/profile'"></div>
+            <button onclick="location.href='/logout'"> Log Out </button>
+            <button onclick="location.href='/messages'"> Messages </button>
+        <% else %>
+        <div class="logged-out-buttons">
+            <button onclick="location.href='/login'"> Sign In </button>
+            <button onclick="location.href='/signup'"> Sign Up </button>
+        </div>
+        <% end %>
+    </div>
+
+</header>
+
+

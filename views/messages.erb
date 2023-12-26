@@ -1,0 +1,89 @@
+<!-- message html file / erb -->
+
+<head>
+  <meta charset="UTF-8">
+  <title>Eduflix - Inbox</title>
+  <link rel="stylesheet" href="Style/messages.css" type="text/css">
+</head>
+
+<%= erb :"common/header"%>
+
+<body>
+
+<h2 id="heading">Send Message / Report</h2>
+
+<!-- ###########################__Form for sending messages__############################ -->
+
+<form class="form" method="post" action="/messages/new">
+
+  
+  <label for="message_summary">Summary:</label>
+  <select id="message_summary" name="message_summary">
+    <option value="Course Feedback">I'd like to give feedback on a course</option>
+    <option value="Course Report">I'd like to report a course</option>
+    <option value="Website Feedback">I'd like to give feedback on the website</option>
+    <option value="Website Report">I'd like to report an error</option>
+    <option value="Feature Request">I'd like to request a feature</option>
+    <option value="Admin Help">I'd like to contact an Admin/Staff</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="message_body">Message:*</label>
+  <textarea id="message_body" name="message_body" placeholder="REQUIRED. Enter the message body..."required></textarea>
+
+  <label for="thread_id:">Thread ID:</label>
+  <textarea id="thread_id" name="thread_id" placeholder="OPTIONAL. Enter the Thread Id of a thread you want to reply to..."></textarea>
+
+  <input type="submit" value="Send">
+</form>
+
+<!-- ################__input box and table with filtering and sorting__##################### -->
+
+<h2 id="heading">Inbox</h2>
+
+<form class="form" id="SearchForm">
+
+  <label for="search">Search:</label>
+  <input type="text" id="search" name="search">
+
+  <label for="column">in column:</label>
+  <select id="column" name="column">
+    <option value="message_summary">Subject</option>
+    <option value="message_body">Body</option>
+    <option value="timestamp">Date</option>
+    <option value="sender_id">Sender ID</option>
+    <option value="thread_id">Thread ID</option>
+    <option value="message_id">Message ID</option>
+  </select>
+
+  <input type="submit" value="Search">
+  
+</form>
+
+<table id="myTable">
+
+  <tr class="header">
+    <th><a href="?sort=message_summary">Subject&#8597;</a></th>
+    <th><a href="?sort=message_body">Body&#8597;</a></th>
+    <th><a href="?sort=timestamp">Date&#8597;</a></th>
+    <th><a href="?sort=sender_id">Sender ID&#8597;</a></th>
+    <th><a href="?sort=thread_id">Thread ID&#8597;</a></th>
+    <th><a href="?sort=message_id">Message ID&#8597;</a></th>
+  </tr>
+  
+  <% @messages.each do |message| %>
+    <tr>
+      <td><%= message[:message_summary] %></td>
+      <td><%= message[:message_body] %></td>
+      <td><%= message[:timestamp] %></td>
+      <td><%= message[:sender_id] %></td>
+      <td><%= message[:thread_id] %></td>
+      <td><%= message[:message_id] %></td>
+    </tr>
+  <% end %>
+  
+</table>
+
+
+
+</body>

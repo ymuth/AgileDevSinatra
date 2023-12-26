@@ -1,0 +1,16 @@
+# frozen_string_literal: true
+
+source 'https://rubygems.org'
+gem 'bcrypt'
+gem 'capybara'
+gem 'launchy'
+gem 'logger'
+gem 'puma'
+gem 'rack-test'
+gem 'require_all'
+gem 'rspec'
+gem 'sequel'
+gem 'simplecov'
+gem 'sinatra'
+gem 'sinatra-contrib'
+gem 'sqlite3'

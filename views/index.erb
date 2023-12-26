@@ -1,0 +1,90 @@
+<head>
+  <link rel="stylesheet" href="Style/index.css">
+  <link rel="stylesheet" href="Style/header.css">
+  <link rel="stylesheet" href="Style/reset.css">
+
+  <%# Font Awesome Icons %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<%= erb :"common/header"%>
+
+<div class="filter-container">
+  <button class="filter-toggle">Filter</button>
+  <div class="filter-menu" id="filter-menu">
+    <p> Sort By: </p>
+    <% if @signed_in %>
+      <a href="/?sort=recommended">Recommended</a>
+    <% end %>
+    <a href="/?sort=popular">Popularity</a>
+    <a href="/?sort=trending">Trending</a>
+    <a href="/?sort=recent">Recently Uploaded</a>    
+  </div>
+</div>
+
+<div class="bookmarked-courses">
+  <a href="/bookmarked-courses">
+    <button class="bookmark-button">Bookmarked Courses</button>
+  </a>
+</div>
+
+
+<div class="container">
+  <h2 id="page-title"> Recommended Courses </h2>
+  <div class="course-container">
+    <% @courses.each do |course| %>
+      <a href="/course_details/<%= course[:course_id] %>" data-course-id="<%= course[:course_id] %>">
+      <div class="course-card">
+        <img src="<%= course.image %>" alt="<%= course.longTitle %>">
+        <div class="card-info">
+          <h2 class="course-title"><%= course.title %></h2>
+
+          <div class="rating">
+  
+            <span class="fa fa-star <%= "checked" if course.getRating.to_i >= 1 %>"></span>
+            <span class="fa fa-star <%= "checked" if course.getRating.to_i >= 2 %>"></span>
+            <span class="fa fa-star <%= "checked" if course.getRating.to_i >= 3 %>"></span>
+            <span class="fa fa-star <%= "checked" if course.getRating.to_i >= 4 %>"></span>
+            <span class="fa fa-star <%= "checked" if course.getRating.to_i >= 5 %>"></span>
+          </div>
+
+          <p class="course-level"><%=course.level %></p>
+          <p class="course-category"><%=course.subject %></p>
+          <p class="course-subtext"><%= course.description %></p>    
+        </div>
+      </div>
+    </a>
+    <% end %>
+  </div>
+</div>
+
+<script>
+    const filterToggle = document.querySelector('.filter-toggle');
+    const filterMenu = document.querySelector('#filter-menu');
+
+    filterToggle.addEventListener('click', () => {
+    filterMenu.classList.toggle('visible');
+    });
+
+const courseCards = document.querySelectorAll('.course-card');
+
+// Add an event listener to each course card
+courseCards.forEach(card => {
+  card.addEventListener('click', () => {
+    // Get the course ID from the data attribute
+    const courseId = card.dataset.courseId;
+
+    // Make an AJAX request to fetch the course details
+    fetch(`/courses/${courseId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Redirect the user to the course details page
+        window.location.href = `/course_details?course_id=${courseId}`;
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  });
+});
+
+</script>
